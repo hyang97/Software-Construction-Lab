@@ -1,0 +1,51 @@
+Week 8 Lab
+
+
+Setup:
+
+- generated random file filled with 10 million randomly generated floating point
+  numbers
+- used the following command:
+  od -An -t f8 -N 80000000 < /dev/urandom | tr -s ' ' '\n' > random.txt
+- od stands for octal dump, essentially takes an input and writes it to standard
+  output in octal form
+- -An set file offset to none, -t f8 specified the format to be floating point
+  numbers taking up 8 bytes each, -N 80000000 means the output is limited to 80
+  million bytes, which translates to 10 million double precision floating point
+  numbers
+- the output is piped through tr, which replaces all space characters with
+  newline characters, and the output is directed into the file random.txt
+
+Timing sort
+
+timing single threaded execution:
+- command: time -p sort -g < random.txt > /dev/null
+- result:
+real 39.75
+user 203.96
+sys 0.43
+
+timing multi-threaded execution:
+- command: time -p sort -g --parallel=N < random.txt > /dev/null
+- note: in the command above, replace N with 1, 2, 4, 8 for number of threads
+- results:
+
+1 thread
+real 177.07
+user 176.92
+sys 0.22
+
+2 threads
+real 95.36
+user 182.53
+sys 0.24
+
+4 threads
+real 59.77
+user 191.96
+sys 0.35
+
+8 threads
+real 40.87
+user 205.89
+sys 0.43

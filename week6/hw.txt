@@ -1,0 +1,20 @@
+Week 6 Homework:
+1. Since the sessions are symmetrically encrypted, a third party looking at the
+bytes would essentially see gibberish instead of the actual commands being
+communicated. If the other teams observed my team's keystrokes, then they would
+have access to the passwords and passphrases we used, as well as all the
+commands we sent during the session. If it's just the keystrokes, the files and
+content we send would be fine as they're still encrypted with the private key.
+If the other teams had physical access to the USBs we used to boot our operating
+system, then our communications would be compromised because the private key
+would be stored on the USB and they could use it to decrypt the communications.
+
+2. gpg --verify would only verify that the exact content of the document sent
+matches the one that the sender intended. The command does this by decrypting
+the signature, generating the message digest from the derived documents, and
+then comparing the decrypted signature with the generated message digest to
+ensure they're the same. In order to ensure that the signer of the message is
+truly the sender, make sure that in the private-public key matching that gpg
+--verify does, the public key actually belongs to the sender. Essentially,
+verify that the sender's public key decrypts the signature to generate the same
+message digest the one created from the received documents. 

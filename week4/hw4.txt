@@ -1,0 +1,24 @@
+Week 4 Homework: Verifying and publishing a backported change
+
+- use the command git checkout v3.0 -b quote to checkout v 3.0 into a new branch
+  called quote
+- applied patch using patch -p1 < ~/cs35l/week4/quote-3.0-patch.txt
+- opened each of the 6 files and used the command C-x 4 a to create a new
+  changelog file and record the changes
+- git add to stage the modified files
+- git commit to commit staged changes - used the ChangeLog as the message for
+  the commit
+- used command git format-patch -1 --stdout > formatted-patch.txt to create a
+  patch including 1 recent commit
+- used scp to trade files with partner, I traded with Jeremiah Fan, 704632449
+- created new branch partner with v3.0
+- applied patch using git am
+- build and test using ./bootstrap, ./configure, make, and make check
+- behaved similarly to original patch
+- sanity check - did ./src/diff . - just to see that ` isn't being used
+- ran make distdir and inspected diffutils*/ChangeLog
+- Jeremy's patch succeeded in every single way
+- repeated the commands make distdir and inspected diffutils*/ChangeLog for the
+  quote branch to ensure my ChangeLog was working - it is
+- 
+

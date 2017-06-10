@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#save the directory passed in into dir variable
+dir=$1
+
+#declare array to hold all files
+declare -a regFiles
+
+#dump all the regular files from current directory into array, sorted
+IFS=$'\n'
+regFiles=(`find $dir -maxdepth 1 -type f | sort `)
+
+#store the value of the array size
+size=${#regFiles[@]} 
+
+#iterate through all elements in the array
+for i in `seq 0 1 $((size-1))`
+do
+    filename1=${regFiles[$i]}
+
+    #compare current file with every subsequent file
+    for j in `seq $((i+1)) 1 $((size-1))`
+    do
+	filename2=${regFiles[$j]}
+
+	#check if the files are the same
+	cmp  $filename1 $filename2
+	if [ $? -eq 0 ]
+	    then
+
+	    #check if the file leads with a '.', prioritize if so
+	    leadingChar=${filename2:0:1}
+	    if [[ $leadingChar == *"."* ]]
+		then
+		ln -f $filename2 $filename1
+       	    else
+		ln -f $filename1 $filename2
+	    fi
+	fi    
+    done
+done

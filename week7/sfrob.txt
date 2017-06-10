@@ -1,0 +1,52 @@
+Time differences between sfrob, sfrobu, and sfrobs:
+
+using 160 words:
+sfrob: 0m0.004s
+sfrobu: 0m0.005s
+sfrobs: 0m0.009s
+
+using 1600 words:
+sfrob: 0m0.006s
+sfrobu: 0m0.011s
+sfrobs: 0m0.013s
+
+using 16000 words:
+sfrob: 0m0.020s
+sfrobu: 0m0.079s
+sfrobs: 0m0.017s
+
+using 160000 words:
+sfrob: 0m0.191s
+sfrobu: 0m0.677s
+sfrobs: 0m0.116s
+
+using 1600000 words:
+sfrob: 0m1.631s
+sfrobu: 0m5.455s
+sfrobs: 0m0.952s
+
+Comparisons vs input size:
+
+note: sfrob and sfrobu had same # of comparisons, as expected
+
+160 lines: 976
+1600 lines: 14972
+16000 lines: 202296
+160000 lines: 2553035
+1600000 lines: 30853451
+
+Ignoring the earlier data points, the growth of the algorithm is rather close to
+linear time, as a 10x increase in the input size approximately lead to a 12 or
+13x increase in the number of comparisons, especially towards the larger input
+values. The reason for the higher growth in the beginning may be due to some
+coefficient that is ultimately trivialized when looking at larger jumps in
+size. 
+
+Using excel and linear regression, the coefficient attached to the input size is
+~19. Since sfrob and sfrobu both utilize quicksort, which is O(nlogn), it is
+reasonable to assume that the comparison follows that approximate complexity. In
+fact, O(nlogn) is extremely similar to O(n), which is linear time, so this makes
+sense.
+
+Excel linear trendline: y = 19.358x - 157975, where y = comparisons and x =
+input size.

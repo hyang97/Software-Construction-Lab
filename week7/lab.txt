@@ -1,0 +1,180 @@
+Week 7 Laboratory
+
+Writing tr2b.c
+- first had to verify that all arguments were as expected
+- main function arguments argc and argv gives access to the arguments passed
+into this function when it's called from the command line
+- argc = number of arguments
+- argv = array of arguments
+- argv[0] = function name, argv[1] = from string, argv[2] = to string, in this
+case
+- checked that there were 2 arguments (a value of 3 for argv, since the name is
+considered an argument)
+- checked that the 2 arguments had the same length by using strlen
+- checked that the first argument had no repeats using double for-loop
+- if it fails any of the checks, the reason is output into stdout and the
+program exits prematurely
+- if the arguments are valid, characters are grabbed from standard input using
+getchar and printed to standard output using putchar
+- used for-loop to check if the read character is one of the characters in the
+from string; if so, output the corresponding character in the to string
+
+Writing tr2u.c
+- essentially the same as tr2b.c, except used read and write instead of getchar
+and putchar
+- when reading the character one at a time, read expects a pointer to a
+character array, so that data structure is used instead
+- in addition, the controlling loop looking for EOF has to also be able to
+handle errors reading the file, so the while loop checks for read to return a
+value larger than 0
+- the write function expects a pointer to an array, which is fine because the
+input was stored in an array
+
+Testing tr2b and tr2u:
+- first, generate large file for testing (at least 5MB size), i used the command
+od -An -t c -N 5MB < /dev/urandom > big5.txt
+- big5.txt ended up being 19.4MB large, ok.
+- next, sanity check with a small testing file just to see the transliteration
+work, file test.txt just had "123123123", and using tr2b and tr2u with "123"
+"456" both returned "456456456", we're ok
+- need to run a total of 8 tests: for each tr2b and tr2u, needs to run strace
+where the output goes into file and standard output, and also use time for when
+the output goes into file and standard output
+
+strace:
+- note: strace arguments -o specifies the file to write the output to, and -c
+keeps tracks of the system calls / any errors that come up
+- tr2b to file: strace -o results.txt -c ./tr2b "1a2b" "2b1a" < big5.txt >
+output.txt 
+- tr2b to standard output: strace -o results.txt -c ./tr2b "1a2b" "2b1a" <
+big5.txt
+- tr2u to file: strace -o results.txt -c ./tr2u "1a2b" "2b1a" < big5.txt >
+output.txt
+- tr2u to standard output: strace -o results.txt -c ./tr2u "1a2b" "2b1a" <
+big5.txt
+
+time:
+- tr2b to file: time ./tr2b "1a2b" "2b1a" < big5.txt > output.txt
+- tr2b to standard output: time ./tr2b "1a2b" "2b1a" < big5.txt
+- tr2u to file: time ./tr2u "1a2b" "2b1a" < big5.txt > output.txt
+- tr2u to standard output: time ./tr2u "1a2b" "2b1a" < big5.txt
+
+results:
+strace
+- tr2b to file: 648 system calls
+- tr2b to standard output: 312839 system calls
+- tr2u to file: 40625027 system calls
+- tr2u to standard output: 40625027 system calls
+
+time
+- tr2b to file
+real   0m1.323s
+user   0m1.024s
+sys    0m0.027s
+- tr2b to standard output
+real   0m13.882s
+user   0m1.379s
+sys    0m0.878s
+- tr2u to file
+real   0m26.761s
+user   0m1.308s
+sys    0m22.888s
+- tr2u to standard output
+real   0m25.337s
+user   0m1.239s
+sys    0m24.106s
+
+- as expected, tr2b made far fewer system calls than tr2u did. this is because
+  the library function is optimized to make fewer system calls, since they are
+  much more expensive due to the fact that one the mode has to switch.
+- tr2b had more system calls when it needed to write to standard output. this is
+  understandable, as writing to standard output would require more system calls
+  than writing to a file would require
+- tr2u had the exact same number of system calls when it had to write to the
+  file as well as when it had to write to standard output. this is
+  understandable, as it makes the same system call (write) each time regardless
+  of file vs standard output.
+- in terms of time, more system calls meant a longer runtime. in addition, tr2b
+  spent more time in the user space than the system space, while the opposite is
+  true for tr2u. this is due to the fact that tr2u doesn't optimize away any
+  system calls - it only reads in one byte at a time, while tr2b is able to
+  optimize since the library function was called. this is the benefit of having
+  a buffer!
+
+for reference, the output of strace:
+
+tr2b to file
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000082           0       310           write
+  0.00    0.000000           0       312           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         4           fstat
+  0.00    0.000000           0        10           mmap
+  0.00    0.000000           0         3           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000082                   648         1 total
+
+tr2b to terminal
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 99.36    0.022742           0    312501           write
+  0.64    0.000146           0       312           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         4           fstat
+  0.00    0.000000           0        10           mmap
+  0.00    0.000000           0         3           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.022888                312839         1 total
+
+tr2u to file
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 57.82    3.006552           0  20312501           write
+ 42.18    2.193294           0  20312502           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         3           fstat
+  0.00    0.000000           0         9           mmap
+  0.00    0.000000           0         3           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    5.199846              40625027         1 total
+
+tr2u to terminal
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 56.41    0.781902           0  20312501           write
+ 43.59    0.604144           0  20312502           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         3           fstat
+  0.00    0.000000           0         9           mmap
+  0.00    0.000000           0         3           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    1.386046              40625027         1 total

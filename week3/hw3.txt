@@ -1,0 +1,19 @@
+Week 3: Modifying and Rewriting Software
+
+1. The line "case_long_iso_time_style:" was a goto marker to a redundant case in
+the switch statement, since "case long_iso_time_style:" was already there. Removing
+"case_long_iso_time_style" cleans up the code by getting rid of the unnecessary
+line, since we removed the goto line. 
+2. By adopting this patched version of coreutils, we just use the traditional
+UNIX format for displaying date. This might be problematics if other programs
+expect different formats for dates since we force the traditional UNIX format,
+such as in other countries that display month and day in different orders.
+3. When an empty file is passed in as the argument, the program will fail with
+a list index out of range error. Since the self.lines reads all the lines from
+the file, and the file is empty, self.lines will have 0 length. The random class
+function will return IndexError if the list is empty, which is exactly what
+happened here.
+4. In python 3, automatic tuple unpacking was removed so the line "except IO
+error as (errno, strerror):" throws an error for invalid syntax. In 2.7, the
+tuple (errno, strerror) is automatically evaluated, but this is not the case
+anymore in python 3.

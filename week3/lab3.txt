@@ -1,0 +1,29 @@
+Week 3 Laboratory: Installing a small change to a big package
+
+- moved extracted coreutils files into my working directory
+- created exec folder to hold all of the installed executables called exec 
+- ran configure with the argument
+  --prefix="/u/cs/ugrad/ziheny/cs35l/week3/coreutils-7.6/exec" 
+- configure creates the make file that installs executables into exec
+- ran make, make install
+- cd into exec/bin and then ran ls executable to reproduce the bug
+- specifically ran "./ls -l ~/" to see the bug 
+- cd into coreutils-7.6/src
+- opened emacs to edit ls.c
+- C-s and found the first change to make according to Brady's workaround
+- changed all the lines, saved and exit
+- cd into coreutils-7.6 and ran make, which recompiled the modified ls.c
+- significant lines:
+CC ls.o --> recompiled the changed file using gcc
+CCLD dir, CCLD vdir, CCLD ls --> updated files that have connection to changed
+ls.c file
+GEN dir.1, GEN vdir.1, GEN ls.1 --> updating man pages
+all other lines recursively went into all the relevant directories for the make
+file, found there was nothing to be done, and popped out of the recursion
+- in folder coreutils-7.6, ran the following lines
+./src/ls -l ~/ --> for patched executable
+./exec/bin/ls -l ~/ --> for not patched executable
+- it works perfectly fine for files older than one year and younger than one
+  year - used the /bin directory for some older files
+- newer files show the hour/minute, older files show year
+- old executable does not work as intended

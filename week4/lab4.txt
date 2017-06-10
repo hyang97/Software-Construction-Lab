@@ -1,0 +1,48 @@
+Week 4 Laboratory: Change Management
+
+- git clone git://git.savannah.gnu.org/diffutils.git to get the files from the
+  git repository
+- git log > git-log.txt --> piped the log output data into text file
+- git tag > git-tags.txt --> piped the git tags into text file
+- used C-s to jump to the commit with the multiple instances of "like this"
+- copied the hash value and used git show to get the patch data from the commit,
+  piped the patch data into a file called quote-patch.txt
+- used git checkout v3.0 -b newbranch to create a new branch that points at the
+  commit called v3.0, moved to newbranch
+- before applying check, we reproduce the bug on this branch by calling
+  ./src/diff . -, and seeing that the error message produced has `-'
+- applied patch using patch -p1 < quote-patch.txt
+- skipped all the files that the program was unsure about patching
+- git status showed a list of all the files that were modified
+- in order to make sure the impact of the patch was minimal and only affected
+  the files that were necessary, each modified file was inspected using vc-diff
+- the non c files were reverted entirely using vc-revert in emacs
+- the hunks in the c files that contained changes in comments were reverted,
+  since those were not strictly necessary changes to  make
+- inspected the .rej files to see which changes failed, and applied the changes
+  if they were imported - if they were changes from ` to ' in code
+- removed untracked files, but saved the files to be turned in elsewhere before
+  deleting
+- used git diff > quote-3.0-patch.txt to generate clean patch, inspected to see
+  it was 327 lines
+- used ./bootstrap, ./configure, make, and then make check as specified by
+  README-hacking
+- ran the command ./src/diff . - and saw that the error message did not contain
+  ` -- success!!!!
+- ./src/diff --help was successful as well!
+- staged all the modified files using git add
+- copied the quote-3.0-patch.txt file somewhere safe and cleaned it away
+- git commit -m 'clean patch' to commit the changes
+- created new directories diffutils-3.0 and diffutils-3.0-patch using mkdir
+- copied the src file for diff into diffutils-3.0-patch while still on
+  newbranch, and then moved to the commit v3.0 to move the src file for diff
+  into diffutils-3.0
+- ran the line ./diffutils/src/diff -pru diffutils-3.0 diffutils-3.0-patch
+  >quote-3.0-test.txt while in the directory containing the source fill
+  directory as well as the diffutils directory
+- used diff to find the difference between quote-3.0-test.txt and
+  quote-3.0-patch.txt, and piped the result into patchdiff.txt
+- upon inspection, there are differences between quote-3.0-test.txt and
+  quote-3.0-patch.txt, but that is simply because quote-3.0-test.txt contains
+  information from both the unpatched and patched source code, while
+  quote-3.0-patch.txt merely contains the required changes

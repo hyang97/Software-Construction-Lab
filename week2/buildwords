@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#remove the initial useless portion
+sed '/<!DOCTYPE/,/Adopt/d' - | \
+#delete every line except for the hawaiian words
+sed '/<\/tr>/,/<\/td>/d' | \
+#remove underline tags
+sed 's/<u>\([^<]*\)<\/u>/\1/g' | \
+#replace ` with '
+sed 's/`/'"'"'/g' | \
+#remove html tags from the hawaiian words
+sed 's/<td>\([^<]*\)<\/td>/\1/g' | \
+#translate all characters to lower
+tr '[:upper:]' '[:lower:]' | \
+#separate lines with multiple words separated by a comma
+tr '[ ,]' '[\n*]' | \
+#remove anything that is not a hawaiian word
+sed 's/'.*[^\'pkmnwlhaeiou].*'//g' | \
+#remove whitespace
+sed '/^\s*$/d' | \
+#remove tabs
+sed 's/^[\t]*//' | \
+#sort the list of hawaiian words, eliminating duplicates
+sort -u

@@ -1,0 +1,209 @@
+Week 9 Lab: Who's linked to what?
+
+- wrote the trivial program in trivial.c
+- compiled using gcc -I . -c trivial.c to create object file
+- used gcc -o trivial -L . trivial.o -lm to create executable
+- ran ldd trivial to get which libraries were linked to to file, the output is
+  the following:
+  linux-vdso.so.1 =>  (0x00007ffdc37f7000)
+  libm.so.6 => /lib64/libm.so.6 (0x0000003da1200000)
+  libc.so.6 => /lib64/libc.so.6 (0x0000003da0e00000)
+  /lib64/ld-linux-x86-64.so.2 (0x0000003da0a00000)
+- important dynamic libraries to note are libm.so and libc.so, which are for the
+  cos function and printf function, respectively
+- .so refers to dynamic libraries! .a means static
+- running strace on the executable creates a very verbose output, but the most
+  important lines are detailed below: 
+mmap(0x3da1200000, 2633912, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3,
+  0)  = 0x3da1200000
+mmap(0x3da0e00000, 3750184, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3,
+  0)  = 0x3da0e00000
+- these lines map the function to some memory address, and as seen from the
+  output of the ldd command, those two are the exact memory address that the
+  functions from the dynamic library are located at
+- dynamic libraries allow changes in the implementation of functions, such as
+  printf and cos, without the need to recompile, as it is dynamically mapped
+- ls /usr/bin | awk 'NR%101==204584728%101' --> command used to find the dozen
+  or so commands to check linked dynamic libraries
+- output of the command: 
+afmtodit, bmp2tiff, cmake, db43_recover, ecj, find-repos-of-install, gettext,
+gnome-volume-control,  gtkdocize, htdbm, jadetex, kgrantpty, kwin, lwp-dump,
+mktexpk,  nenscript, over, passmass, perlivp, pkcheck, ppdpo, psfxtable, readom,
+rsvg-convert, showrgb, stream, tiff2bw, virt-xml-validate, xmag, zless
+- ldd creates the error message: not a dynamic executable
+- the following executables cause this error message: afmtodit, ecj,
+  find-repos-of-install, gtkdocize, lwp-dump, mktexpk, over, passmass, perlivp,
+  virt-xml-validate, zless
+- the reason for this error could be one of two reasons (as seen from the man
+  page): 1) ldd does not work on shared libraries (a.out), 2) ldd does not work
+  with extremely old programs that were built before ldd support 
+- in order to create the sorted list of all the dynamic libraries from the
+  executables, the follow commands were used:
+- sed 's/=>.*//g' to isolate the library names
+- sed 's/(.*)//g' to clean up memory addresses that slipped through the first
+  regex 
+- sed 's/so.*/so/g' to remove the line reference of the dynamic libraries, since
+  different functions from the same libraries should not be counted twice
+- sort -u is used to sort the list of libraries while removing duplicates
+- the following is the sorted list of all libraries:
+/lib64/ld-linux-x86-64.so
+libacl.so
+libapr-1.so
+libaprutil-1.so
+libarchive.so
+libasyncns.so
+libatk-1.0.so
+libattr.so
+libaudit.so
+libavahi-client.so
+libavahi-common.so
+libbz2.so
+libcairo.so
+libcanberra-gtk.so
+libcanberra.so
+libcom_err.so
+libcroco-0.6.so
+libcrypto.so
+libcrypt.so
+libc.so
+libcupsppdc.so
+libcups.so
+libcurl.so
+libdb-4.3.so
+libdb-4.7.so
+libdbus-1.so
+libdbus-glib-1.so
+libdl.so
+libdrm.so
+libeggdbus-1.so
+libexpat.so
+libfam.so
+libFLAC.so
+libfontconfig.so
+libfreebl3.so
+libfreetype.so
+libgcc_s.so
+libgconf-2.so
+libgcrypt.so
+libgdk_pixbuf-2.0.so
+libgdk-x11-2.0.so
+libgio-2.0.so
+libglapi.so
+libglib-2.0.so
+libGL.so
+libgmodule-2.0.so
+libgnutls.so
+libgobject-2.0.so
+libgomp.so
+libgpg-error.so
+libgsf-1.so
+libgssapi_krb5.so
+libgthread-2.0.so
+libgtk-x11-2.0.so
+libICE.so
+libidn.so
+libjpeg.so
+libk5crypto.so
+libkdecorations.so
+libkdecore.so
+libkdeinit4_kwin.so
+libkdeui.so
+libkephal.so
+libkeyutils.so
+libkfile.so
+libkio.so
+libknewstuff2.so
+libkpathsea.so
+libkrb5.so
+libkrb5support.so
+libkwineffects.so
+libkwinnvidiahack.so
+liblber-2.4.so
+liblcms.so
+libldap-2.4.so
+libltdl.so
+liblzma.so
+libMagickCore.so
+libMagickWand.so
+libm.so
+libnsl.so
+libnspr4.so
+libnss3.so
+libnssutil3.so
+libogg.so
+libopenjpeg.so
+libORBit-2.so
+libpango-1.0.so
+libpangocairo-1.0.so
+libpangoft2-1.0.so
+libpcre.so
+libphonon.so
+libpixman-1.so
+libplasma.so
+libplc4.so
+libplds4.so
+libpng12.so
+libpolkit-gobject-1.so
+libpoppler.so
+libpthread.so
+libpulsecommon-0.9.21.so
+libpulse-mainloop-glib.so
+libpulse.so
+libQtCore.so
+libQtDBus.so
+libQtGui.so
+libQtNetwork.so
+libQtOpenGL.so
+libQtSvg.so
+libQtXml.so
+libreso
+librsvg-2.so
+librt.so
+libsasl2.so
+libselinux.so
+libsmime3.so
+libSM.so
+libsndfile.so
+libso
+libssh2.so
+libssl3.so
+libssl.so
+libstdc++.so
+libstreamanalyzer.so
+libstreams.so
+libtasn1.so
+libtdb.so
+libthreadweaver.so
+libtiff.so
+libunique-1.0.so
+libuuid.so
+libvorbisenc.so
+libvorbisfile.so
+libvorbis.so
+libwrap.so
+libX11.so
+libX11-xcb.so
+libXau.so
+libXaw.so
+libxcb-dri2.so
+libxcb-glx.so
+libxcb.so
+libXcomposite.so
+libXcurso
+libXdamage.so
+libXdmcp.so
+libXext.so
+libXfixes.so
+libXft.so
+libXinerama.so
+libXi.so
+libxml2.so
+libXmu.so
+libXpm.so
+libXrandr.so
+libXrender.so
+libXt.so
+libXtst.so
+libXxf86vm.so
+libz.so
+linux-vdso

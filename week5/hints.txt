@@ -1,0 +1,15 @@
+1. ./configure cflags="-g"
+2. Make (this will fail)
+3. Apply patch --> patch -p0 < patchfile
+
+
+bug
+something to do with sorting
+
+gdb ls.c
+
+emacs ls.c
+M-x gdb
+gdb: ls.c
+b sort_files
+r -lt /tmp/blahblahblah

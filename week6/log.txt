@@ -1,0 +1,60 @@
+Lab 6:
+- first installed openssh-client and openssh-server
+- first used dpkg --get-selections | grep openssh to check which were already
+installed, if any
+- since openssh-server wasn't installed, ran the command sudo apt-get install
+openssh-server
+- my partner (shannon) and I worked as client and server - we took turns being
+each in order to try out SSH-ing into a server
+- SERVER INSTRUCTIONS
+- to create an account for the client on the server, use the following commands
+- sudo useradd -d /home/<username> -m <username>
+- sudo passwd <username> (this line will prompt for a password for the account)
+- once the account is created, the following lines will create a .ssh directory
+for the account:
+- cd /home/<username>
+- sudo mkdir .ssh
+- next, give the account access to the .ssh directory
+- sudo chown -R <username> .ssh
+- sudo chmod 700 .ssh
+- in order for the client to login, the client needs to know the IP Address of
+the server
+- ifconfig -> gets the IP address, listed under inet address
+- CLIENT INSTRUCTIONS
+- now that the server has setup the account for the client, the client should
+try to ssh into the server
+- as a part of this lab, try three different ways of getting into the server:
+password login, password-less login, and passphrase-less login
+- in order to do password login, use the following command:
+- ssh <username>@server_ip_address
+- this will prompt for the password each time to login, as the password is the
+authentication needed for security purposes
+- the first time ssh-ing into the server, there will be a prompt to trust the
+public key of the server / save this preference
+- in order to do password-less login, use the following commands:
+- ssh-keygen -> this command will prompt to create a public-private key pair,
+press enter to save the keys into the default directory. a prompt will also
+ask to create a passphrase for the key to authenticate the owner of the key
+- ssh-copy-id -i <username>@server_ip_address -> copies the public key to the
+.ssh directory in the account on the server, this will require you to enter your
+password once
+- ssh <username>@server_ip_address -> will log you in without your password, but
+does ask for your passphrase to make sure the keys belong to you
+- in order to do passphrase-less login, use the following commands:
+- ssh-add -> this will prompt you for your passphrase to authorize that you are
+the owner of your keys
+- ssh <username>@server_ip_address -> will log you in, first time asks for your
+passphrase to make sure the keys belong to you, will not prompt you for further
+logins
+- the difference between password-less login and passphrase-less login is nearly
+nonexistent when it comes to ssh-ing after doing the initial setup steps. this
+is because the SEASnet servers automatically save the fact that you've
+autheticated your ownership of your keys during the password-less login,
+essentially doing the same step as the passphrase-less login, which means the
+password-less login behaves just like the passphrase-less login.
+- once ssh-ed into the server with the argument -X (i.e. ssh -X
+<username>@server_ip_address), can run programs that use the processing power of
+the server but appear in a GUI on the client machine
+- use the command: ps aux | grep ssh on the server while the client executes
+some command on the server to check that the server is running the program the
+client executed

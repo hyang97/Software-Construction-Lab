@@ -1,0 +1,65 @@
+Lab Week 2 Log: Spell-checking Hawaiian
+
+- locale showed that my settings were in UTF-8, so I used "export LC_ALL='C'"
+- sorted the words file from the server and piped the result into a file called
+  words in my home directory  
+- used curl to download the assignment webpage into assign2.html
+- man tr tells me -c utilizes the complement of set1, makes sense because the
+  sets are not regular expressions so ^'s are not a thing
+- also tells me that * makes copies \n to ensure that theres a one-to-one
+  relationship between sets 1 and 2
+- -s is used because it replaces a whole string of nonalpha characters with just
+  one newline character, effectively squeezing the output text by eliminating
+  access newline characters
+  * interesting occurance, the first line of the document is a newline charactaer
+- sort -u is used to sort the resulting text and eliminate repeated characters
+- comm - words compares the piped text output to the words file line by line
+- comm -23 - words does the same thing, except it surpresses column 2 and 3,
+  meaning all that's left are the words unique to the piped text
+- sed can be used to delete entire lines bounded from pattern to pattern
+- sed can also delete everything but a specific pattern determined by regex
+- tr can be used to translate all upper case characters to lower case
+- using \s in a regex caught all of the whitespace, so \s is a useful regex for
+  dealing with whitespace
+- trying sed with \( and \) helped pull out the hawaiian words from the html
+  tags 
+- ./filename parameter --> properly pass in parameters, doesn't work when sed
+  expects something from standard input. that requires ./filename < input
+- the - in sed is not necessary beyond the first command
+- using all of this information, this is my script for building the hawaiian
+  words dictionary:
+#!/bin/bash
+sed '/<!DOCTYPE/,/Adopt/d' - | \
+sed '/<\/tr>/,/<\/td>/d' | \
+sed 's/<u>\([^<]*\)<\/u>/\1/g' | \
+sed 's/`/'"'"'/g' | \
+sed 's/<td>\([^<]*\)<\/td>/\1/g' | \
+tr '[:upper:]' '[:lower:]' | \
+tr '[ ,]' '[\n*]' | \
+sed 's/'.*[^\'pkmnwlhaeiou].*'//g' | \
+sed '/^\s*$/d' | \
+sed 's/^[\t]*//' | \
+sort -u
+- trying to replace ` with ' was challenging because the command was having
+  trouble recognizing ' as the character to replace with. It was only after
+  surrounding ' in "" did the command finally behave as expected.
+- in order to spellcheck the webpage by hawaiian words standard, I used the
+  following commands: tr -cs "A-Za-z'" '[\n*]' | tr '[:upper:]' '[:lower:]' | \
+  sort -u | comm -23 - hwords.txt
+- more specifically, I wrote the above commands into a script and passed the
+  html in as standard input and wrote the results into a text file to see the
+  misspelled hawaiian words.
+- in addition, I specifically included ' in the first tr command, since ' are
+  acceptable in terms of hawaiian words. I noticed this necessity when the
+  spellchecker failed for the hawaiian words dictionary if I forget the '
+- in order to spellcheck the webpage for english words, I used the command given
+  on the webpage
+- I used wc -l to find how many words were misspelled in each case
+- the assignment webpage has 414 misspelled hawaiian words and 80 misspelled
+  english words.
+- in order to find the words that are misspelled as one but not the other, i
+  used diff -u with the two output files filled with misspelled words, and
+  inspected which words were added/removed
+- address is an example of a misspelled hawaiian word but not a misspelled
+  english word. halau is an example of a misspelled english word but not a
+  misspelled hawaiian word.

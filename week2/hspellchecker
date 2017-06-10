@@ -1,0 +1,5 @@
+#!/bin/bash
+tr -cs "A-Za-z'" '[\n*]' | \
+tr '[:upper:]' '[:lower:]' | \
+sort -u | \
+comm -23 - hwords.txt

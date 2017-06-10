@@ -1,0 +1,35 @@
+Week 5 Lab: Debugging a C program
+
+- downloaded coreutils-with-bug.tar.gz, extracted it, ran the commands
+  ./configure CFLAGS="-g" and make
+- make failed, bug was in futimens function signature
+- applied patch coreutils.diff, which renamed all instances of futimens to
+  coreutils_futimens
+- the build failed as-is since there was another function declared as futimens,
+  so renaming the function allowed the build to succeed
+- applied patch using command patch -p0 < ~/cs35l/week5/coreutils.diff
+- five files were patched - lib/utimens.c, lib/utimens.h, src/copy.c, src/tee.c,
+  src/touch.c
+- ran make again, this time with success
+- to reproduce bug, create temporary directory following code on assignment page
+- tmp directory is /tmp/tmp.bwICcncS4U
+- reproduced bug with following line:
+TZ=UTC0 ~/cs35l/week5/coreutils-with-bug/src/ls -lt --full-time wwi-armistice\
+  now now1
+- ordered wwi-armistice before now1 and now, which is wrong
+- system ls orders now1 before now before wwi-armistice
+- open ls.c in emacs and gdb in a separate buffer, and have gdb run ls (the
+  buggy version)
+- set breakpoint at sort_files and execute ls using r -lt /tmp/tmp.bwICcncS4U
+- noticed that program ultimately steps into timespec_cmp to use as the
+  predicate function for sorting
+- timespec_cmp expects positive numbers for comparison, but since time is
+  measured as the number of seconds after Jan 1st 1970, and wwi-armistice is in
+  1918, the time for wwi-armistice is negative
+- since the time for wwi-armistice is negative, timespec_cmp has overflow error,
+  wrong returning a negative value instead of a positive one
+- in order to avoid overflow -- which occurs when exactly one argument is
+  negative, we use if statements to avoid subtracting entirely and simply
+  returning the proper diff value
+- when both are negative or both are positive, then subtracting is okay
+- we make these changes in cmp_mtime, which is in the ls.c file

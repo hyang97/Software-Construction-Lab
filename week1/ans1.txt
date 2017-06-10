@@ -1,0 +1,69 @@
+Week 1 Lab: Linux and Emacs scavenger hunt
+
+1. By using the command "man 1 -K [string]" where [string] is the specific word
+string one is looking for on the man pages. "man man" describes how to do this
+specifically. 
+
+2. cp is located in /bin, wc is located in usr/bin. "whereis cp" and "whereis
+wc" show this information. 
+
+3. w, [, X. w shows which users are logged on and what they are doing. [ does
+the same thing as the test command and it can be used to check file
+types/compare values. X is a portable, network-transparent window system. "find
+/usr/bin -name ? -executable" returns all the single character executables, and
+the description can be found using man.
+
+4. /etc/alternatives/emacs - I found this by running "readlink /usr/bin/emacs"
+which returns what the symbolic link actually points to.
+
+5. if an executable has the g+s permission, then the user that runs the
+executable will gain the same permissions as that of the group that owns the
+executable. o-x means to remove the permission to execute the file in question
+from the "others" group.
+
+6. find / -type f -mtime -21 - I found this by using "man find" and reading
+about the various tests that can be performed with this command.
+
+7. ., ./Desktop, ./Documents, ./Downloads, ./.emacs.d,
+./.emacs.d/auto-save-list - all these found using "find . -type d -mtime -21" 
+
+8. find appears in 4 directories - /bin, /usr/bin, /usr/share/man/man1,
+/usr/share/man/man1p. /bin has 20, /usr/bin has 350, /usr/share/man/man1 has
+164, and /usr/share/man/man1p has 0. I found these directories by using "whereis
+find" to find the directories find belongs to.
+
+9. The oldest file is libgamin-1.so.0.1.10. This is found by navigating to
+/usr/lib using "cd /usr/lib" and using "ls -t -l" to list all files ordered by
+date. 
+
+10. Locale gets its data from /usr/lib/locale/. This information can be found by
+acccessing the locale manual using the line "man 5 locale".
+
+11. Buffer-menu-sort, Buffer-menu-sort-by-column, ibuffer-invert-sorting,
+ibuffer-toggle-sorting-mode, rmail-sort-by-author, rmail-sort-by-corresponding,
+rmail-sort-by-date, rmail-sort-by-labels, rmail-sort-by-lines,
+rmail-sort-by-recipient, rmail-sort-by-subject, sort-columns, sort-fields,
+sort-lines, sort-numeric-fields, sort-pages, sort-paragraphs,
+sort-regexp-fields. I found this by using "C-h a sort" and I also included all
+the commands that include "sorting" in addition to sort.
+
+12. C-M-a moves the cursor to the beginning of a defun, C-M-e moves it to the
+end, and C-M-h marks a defun. C-M-b moves back to the beginning of a balanced
+expression, C-M-f moves to the front. C-M-c quits out of the innermost recursive
+edit, or a minibuffer. C-M-d moves forward one level of parantheses. C-M-g seems
+to correspond to C-g as the meta key is dropped, and C-g is quit. I found these
+using "C-h c" to find the name of the command, and used "C-h f" to find the
+descriptions. 
+
+13. C-g runs the command keyboard-quit, which signals a 'quit' condition and
+directly quits the execution of Lisp code. I found this information by using C-h
+f keyboard-quit, after finding out C-g runs keyboard-quit by using "C-h c C-g" 
+
+14. The yank function pastes the last stretch of killed text at the location of
+the cursor in the buffer. I found this by using "C-h f yank"
+
+15. dired shows how much memory is available while ls -l does not. dired also
+lists the . and .. directories. To use the ls command, I navigated to the
+directory /usr/bin using "cd /usr/bin" and then using the command ls -l. To use
+dired to show the /usr/bin directory, I entered emacs and used "C-x d" and
+supplied /usr/bin as the full path for the directory I wanted to see. 

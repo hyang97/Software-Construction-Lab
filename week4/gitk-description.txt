@@ -1,0 +1,11 @@
+Gitk Description
+
+There are 5 windows present in the screenshot. The top 3 subwindows describe
+information about various commits. Going right from left, the first window
+visualizes the branching of the commits along with the commit name. The second
+window shows the author of the commit. The third window displays the date of the
+commit, and it is in this window where I found the newest commit that is not
+newer than 2015-1-25. On the bottom half of the display, there are two
+windows. Going from left to right, the first window displays the changelog as
+well as the changes made by the commit in a similar format as the output of
+diff. The second window is lists the files that are affected by the commit.
